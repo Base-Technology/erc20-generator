@@ -8,7 +8,8 @@ export const Steps = {
   WAITING: 0,
   DEPLOYING: 1,
   BROADCASTING: 2,
-  DEPLOYED: 3
+  DEPLOYED: 3,
+  AIRDROPED: 4
 };
 
 const StyledDiv = styled.div`
@@ -57,10 +58,10 @@ const StatusBox = ({
 }) => (
   <StyledDiv key="status">
     <ProgressMessage visible={currentStep >= Steps.DEPLOYING}>
-      Deploying ERC20 contract...
+      Processing...
     </ProgressMessage>
     <ProgressMessage visible={currentStep >= Steps.DEPLOYING}>
-      Asking for contract creation transaction signature and gas payment...
+      Asking for transaction signature and gas payment...
     </ProgressMessage>
     <ProgressMessage visible={currentStep >= Steps.BROADCASTING}>
       Broadcasting contract creation to the network...
@@ -83,7 +84,7 @@ const StatusBox = ({
       </span>
       <strong>FINISHED!!!</strong>
     </ProgressMessage>
-    <ProgressMessage visible={currentStep >= Steps.DEPLOYED}>
+    <ProgressMessage visible={currentStep == Steps.DEPLOYED}>
       Contract has been created at: <strong>{contractAddress}</strong>{" "}
       &lt;&lt;&lt; THIS IS YOUR ERC20 CONTRACT, GIVE THIS ADDRESS TO YOUR
       USERS!!! [
@@ -98,7 +99,7 @@ const StatusBox = ({
       </ExternalLink>
       ]
     </ProgressMessage>
-    <ProgressMessage visible={currentStep >= Steps.DEPLOYED}>
+    <ProgressMessage visible={currentStep == Steps.DEPLOYED}>
       Issued tokens address: <strong>{ownerAddress}</strong> &lt;&lt;&lt; THIS
       IS THE INITIAL OWNER OF ALL ISSUED TOKENS!!! [
       <ExternalLink
@@ -112,7 +113,7 @@ const StatusBox = ({
       </ExternalLink>
       ]
     </ProgressMessage>
-    <ProgressMessage visible={currentStep >= Steps.DEPLOYED}>
+    <ProgressMessage visible={currentStep == Steps.DEPLOYED}>
       [
       <ExternalLink
         href={

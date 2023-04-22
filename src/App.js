@@ -6,6 +6,7 @@ import GithubCorner from "react-github-corner";
 import { PoseGroup } from "react-pose";
 import Instructions from "./Instructions";
 import TokenForm from "./TokenForm";
+import TokenAirdropForm from "./TokenAirdropForm";
 import StatusBox, { Steps } from "./StatusBox";
 import styled from "styled-components";
 
@@ -44,6 +45,7 @@ const getEtherscanURL = networkId => {
 
 const App = () => {
   const [web3, setWeb3] = useState();
+  const [state, setState] = useState();
   const [defaultAccount, setDefaultAccount] = useState();
   const [etherscanGetter, setEtherscanGetter] = useState();
   const [currentStep, setCurrentStep] = useState(Steps.WAITING);
@@ -62,11 +64,32 @@ const App = () => {
     }
 
     const _web3 = new Web3(Web3.givenProvider, null, web3Options);
+    const _state = 0;
     const accounts = await _web3.eth.getAccounts();
     setDefaultAccount(accounts[0]);
     const networkId = await _web3.eth.net.getId();
     setEtherscanGetter(getEtherscanURL(networkId));
     setWeb3(_web3);
+    setState(_state);
+  };
+
+  const initializeWeb3Airdrop = async () => {
+    try {
+      // Ensure accounts are unlocked
+      await Web3.givenProvider.enable();
+    } catch (err) {
+      // User didn't approve access for accounts
+      console.log("User has cancelled account access permission");
+    }
+
+    const _web3 = new Web3(Web3.givenProvider, null, web3Options);
+    const _state = 1;
+    const accounts = await _web3.eth.getAccounts();
+    setDefaultAccount(accounts[0]);
+    const networkId = await _web3.eth.net.getId();
+    setEtherscanGetter(getEtherscanURL(networkId));
+    setWeb3(_web3);
+    setState(_state);
   };
 
   const handleTokenCreation = async values => {
@@ -113,6 +136,34 @@ const App = () => {
     }
   };
 
+  const handleAirdrop = async values => {
+    setCurrentStep(Steps.DEPLOYING);
+
+    const _data = {
+      contractAddress: values.contractAddress.trim(),
+      addresses: values.airdropData.addresses,
+      amounts: values.airdropData.amounts
+    };
+    setData(_data);
+
+    const erc20 = new web3.eth.Contract(StandardERC20Token.abi, _data.contractAddress);
+
+    try {
+      await erc20.methods.Airdrop(_data.addresses, _data.amounts)
+        .send({ from: defaultAccount })
+        .on("transactionHash", transactionHash => {
+          setTransactionHash(transactionHash);
+          setCurrentStep(Steps.BROADCASTING);
+        });
+      setContract(contract);
+      setCurrentStep(Steps.AIRDROPED);
+    } catch (err) {
+      // User didn't approve contract creation
+      setCancelled(true);
+      console.log("User has cancelled token creation");
+    }
+  };
+
   const lastRef = useRef(null);
   useEffect(() => {
     if (lastRef.current) {
@@ -125,18 +176,28 @@ const App = () => {
       <header className="App-header">
         <h1>create-token-dapp</h1>
         <Instructions key="info" />
-        {web3 ? (
+        {web3 ? ( state === 0?
           <TokenForm
             key="form"
             onSubmit={handleTokenCreation}
             disabled={currentStep > Steps.WAITING}
-            initialOwner={defaultAccount}
+          /> :
+          <TokenAirdropForm
+            key="airdropForm"
+            onSubmit={handleAirdrop}
+            disabled={currentStep > Steps.WAITING}
           />
         ) : (
+          <div>
           <StartButton key="begin" onClick={initializeWeb3}>
             Begin!
           </StartButton>
-        )}
+          <StartButton key="airdrop" onClick={initializeWeb3Airdrop}>
+            Airdrop!
+          </StartButton>
+          </div>
+        )
+        }
         <PoseGroup>
           {currentStep >= Steps.DEPLOYING && (
             <React.Fragment key="status">

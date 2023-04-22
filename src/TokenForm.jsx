@@ -8,6 +8,7 @@ import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faQrcode } from "@fortawesome/free-solid-svg-icons";
 import { faWindowClose } from "@fortawesome/free-solid-svg-icons";
+import CsvReader from "./CsvReader";
 
 library.add(faQrcode);
 library.add(faWindowClose);
@@ -41,16 +42,14 @@ const TokenField = ({
   optionalExtraControl
 }) => (
   <div
-    className={`form-group ${
-      errors[fieldName] && touched[fieldName] ? "text-danger" : null
-    }`}
+    className={`form-group ${errors[fieldName] && touched[fieldName] ? "text-danger" : null
+      }`}
   >
     <label htmlFor={fieldName}>{label}</label>
     <div className="input-group">
       <Field
-        className={`form-control ${
-          errors[fieldName] && touched[fieldName] ? "is-invalid" : null
-        }`}
+        className={`form-control ${errors[fieldName] && touched[fieldName] ? "is-invalid" : null
+          }`}
         type="text"
         name={fieldName}
         id={fieldName}
@@ -86,6 +85,11 @@ const TokenForm = ({ onSubmit, disabled, initialOwner }) => {
   };
 
   const handleSubmitFormik = (values, { setSubmitting }) => {
+    onSubmit(values);
+    setSubmitting(false);
+  };
+
+  const handleSubmitAirdrop = (values, { setSubmitting }) => {
     onSubmit(values);
     setSubmitting(false);
   };
@@ -127,7 +131,7 @@ const TokenForm = ({ onSubmit, disabled, initialOwner }) => {
 
     return errors;
   };
-
+  
   return (
     <StyledDiv>
       <Formik
@@ -211,12 +215,37 @@ const TokenForm = ({ onSubmit, disabled, initialOwner }) => {
             <CreateTokenButton key="create" type="submit" disabled={disabled}>
               Create Token!{" "}
               {/* <span role="img" aria-label="to the moon"> */}
-                🚀🌙
+              🚀🌙
               {/* </span> */}
             </CreateTokenButton>
           </Form>
         )}
       />
+      {/* <div style={{ width: 500, fontSize: 20 }}>
+        <Formik>
+          validate={handleValidationAirdrop}
+          onSubmit={handleSubmitAirdrop}
+          render={({ values, errors, touched, setFieldValue }) => (
+            <Form className="needs-validation" noValidate>
+              <TokenField
+                values={values}
+                errors={errors}
+                touched={touched}
+                fieldName="contractAddress"
+                label="Contract Address"
+                placeholder="Enter the contract address"
+                helpText="A valid ethereum address starting with 0x..."
+                disabled={disabled}
+              />
+              <CreateTokenButton key="airdrop" type="submit" disabled={disabled}>
+                Airdrop Token!{" "}
+                🚀🌙
+              </CreateTokenButton>
+            </Form>
+          )}
+          <CsvReader />
+        </Formik>
+      </div> */}
     </StyledDiv>
   );
 };
