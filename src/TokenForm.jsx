@@ -108,14 +108,14 @@ const TokenForm = ({ onSubmit, disabled, initialOwner }) => {
 
     if (!values.initialAmount) {
       errors.initialAmount = "Initial amount is required";
-    } else if (!/^[0-9]{1,10}$/.test(values.initialAmount)) {
+    } else if (!/^[0-9]{1,13}$/.test(values.initialAmount)) {
       errors.initialAmount =
-        "Amount must be an integer number between 1 and 1 bi";
+        "Amount must be an integer number between 1 and 1000 bi";
     } else {
       const number = parseInt(values.initialAmount);
-      if (number < 1 || number > 1000000000) {
+      if (number < 1 || number > 1000000000000) {
         errors.initialAmount =
-          "Amount must be an integer number between 1 and 1 bi";
+          "Amount must be an integer number between 1 and 1000 bi";
       }
     }
 
@@ -171,7 +171,7 @@ const TokenForm = ({ onSubmit, disabled, initialOwner }) => {
               label="Initial supply"
               placeholder="Enter the initial supply"
               helpText="E.g. 10"
-              maxLength={10}
+              maxLength={13}
               disabled={disabled}
             />
             <TokenField
