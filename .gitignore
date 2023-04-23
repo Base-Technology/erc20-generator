@@ -11,7 +11,7 @@
 /coverage
 
 # production
-/build
+# /build
 
 /src/contracts/secrets.json
 /src/contracts/node_modules
