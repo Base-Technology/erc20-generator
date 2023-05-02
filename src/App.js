@@ -119,7 +119,6 @@ const App = () => {
   };
 
   const handleTokenCreation = async values => {
-    console.log("1111")
     setCurrentStep(Steps.DEPLOYING);
 
     const _data = {
@@ -137,16 +136,22 @@ const App = () => {
       web3Options
     );
 
+    var args  = [
+      _data.name,
+      _data.symbol,
+      _data.decimals,
+      _data.initialSupply
+    ]
+    var bytecode = BaseToken_U_A.bytecode
+    if (!values.airdropSupport){
+      bytecode = BaseToken_U.bytecode
+    }
+
     try {
       const contract = await erc20
         .deploy({
-          data: BaseToken_U_A.bytecode,
-          arguments: [
-            _data.name,
-            _data.symbol,
-            _data.decimals,
-            _data.initialSupply
-          ]
+          data: bytecode,
+          arguments: args
         })
         .send({ from: defaultAccount })
         .on("transactionHash", transactionHash => {
@@ -234,7 +239,7 @@ return (
       {web3 ? selectedComponent : (
           <div>
           <StartButton key="begin" onClick={initializeWeb3}>
-            Begin!
+            Create!
           </StartButton>
           <StartButton key="airdrop" onClick={initializeWeb3Airdrop}>
             Airdrop!

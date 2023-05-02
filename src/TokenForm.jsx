@@ -127,9 +127,10 @@ const TokenForm = ({ onSubmit, disabled, initialOwner }) => {
         initialValues={{
           tokenName: "",
           tokenSymbol: "",
-          initialAmount: 0,
+          initialAmount: 1000000000000,
           initialOwner,
-          mintingAndBurningSupport: true // added
+          mintingAndBurningSupport: true, // added
+          airdropSupport: true
         }}
         validate={handleValidation}
         onSubmit={handleSubmitFormik}
@@ -168,6 +169,35 @@ const TokenForm = ({ onSubmit, disabled, initialOwner }) => {
               maxLength={13}
               disabled={disabled}
             />
+            <div className="form-group">
+              <label htmlFor="mintingAndBurningSupport">Minting & Burning Support</label>
+              <div className="custom-control custom-switch custom-switch-lg">
+                <Field
+                  className="custom-control-input"
+                  type="checkbox"
+                  name="mintingAndBurningSupport"
+                  id="mintingAndBurningSupport"
+                  checked={values.mintingAndBurningSupport}
+                  disabled={true}
+                />
+                <label className="custom-control-label" htmlFor="mintingAndBurningSupport"></label>
+              </div>
+            </div>
+            <div className="form-group">
+              <label htmlFor="airdropSupport">Airdrop Support</label>
+              <div className="custom-control custom-switch custom-switch-lg">
+                <Field
+                  className="custom-control-input"
+                  type="checkbox"
+                  name="airdropSupport"
+                  id="airdropSupport"
+                  checked={values.airdropSupport}
+                />
+                <label className="custom-control-label" htmlFor="airdropSupport"></label>
+              </div>
+            </div>
+
+
             <CreateTokenButton key="verify" type="submit" disabled={disabled}>
                 Create Token!
                 🚀🌙
