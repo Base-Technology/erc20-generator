@@ -1,14 +1,21 @@
 import React, { useState, useEffect, useRef } from "react";
 import "./App.css";
 import Web3 from "web3";
-import StandardERC20Token from "./contracts/StandardERC20Token.json";
-import GithubCorner from "react-github-corner";
+import BaseToken from "./contracts/artifacts/contracts/BaseToken/BaseToken.sol/BaseToken.json";
+import BaseToken_A from "./contracts/artifacts/contracts/BaseToken/BaseToken_A.sol/BaseToken_A.json";
+import BaseToken_U from "./contracts/artifacts/contracts/BaseToken/BaseToken_U.sol/BaseToken_U.json";
+import BaseToken_U_A from "./contracts/artifacts/contracts/BaseToken/BaseToken_U_A.sol/BaseToken_U_A.json";
+import BaseToken_T from "./contracts/artifacts/contracts/BaseToken/BaseToken_T.sol/BaseToken_T.json";
+import BaseToken_T_A from "./contracts/artifacts/contracts/BaseToken/BaseToken_T_A.sol/BaseToken_T_A.json";
+
 import { PoseGroup } from "react-pose";
 import Instructions from "./Instructions";
 import TokenForm from "./TokenForm";
+import TokenVerifyForm from "./TokenVerifyForm";
 import TokenAirdropForm from "./TokenAirdropForm";
 import StatusBox, { Steps } from "./StatusBox";
 import styled from "styled-components";
+import { API_URL } from "./constants";
 
 const StartButton = styled.button`
   background-image: linear-gradient(to bottom right, green, yellow);
@@ -92,7 +99,27 @@ const App = () => {
     setState(_state);
   };
 
+  const initializeWeb3Verify = async () => {
+    try {
+      // Ensure accounts are unlocked
+      await Web3.givenProvider.enable();
+    } catch (err) {
+      // User didn't approve access for accounts
+      console.log("User has cancelled account access permission");
+    }
+
+    const _web3 = new Web3(Web3.givenProvider, null, web3Options);
+    const _state = 2;
+    const accounts = await _web3.eth.getAccounts();
+    setDefaultAccount(accounts[0]);
+    const networkId = await _web3.eth.net.getId();
+    setEtherscanGetter(getEtherscanURL(networkId));
+    setWeb3(_web3);
+    setState(_state);
+  };
+
   const handleTokenCreation = async values => {
+    console.log("1111")
     setCurrentStep(Steps.DEPLOYING);
 
     const _data = {
@@ -105,7 +132,7 @@ const App = () => {
     setData(_data);
 
     const erc20 = new web3.eth.Contract(
-      StandardERC20Token.abi,
+      BaseToken_U_A.abi,
       null,
       web3Options
     );
@@ -113,12 +140,11 @@ const App = () => {
     try {
       const contract = await erc20
         .deploy({
-          data: StandardERC20Token.bytecode,
+          data: BaseToken_U_A.bytecode,
           arguments: [
             _data.name,
             _data.symbol,
             _data.decimals,
-            _data.ownerAddress,
             _data.initialSupply
           ]
         })
@@ -146,7 +172,7 @@ const App = () => {
     };
     setData(_data);
 
-    const erc20 = new web3.eth.Contract(StandardERC20Token.abi, _data.contractAddress);
+    const erc20 = new web3.eth.Contract(BaseToken_U_A.abi, _data.contractAddress);
 
     try {
       await erc20.methods.Airdrop(_data.addresses, _data.amounts)
@@ -164,36 +190,57 @@ const App = () => {
     }
   };
 
+const handleVerify = async values => {
+    setCurrentStep(Steps.DEPLOYING);
+
+    const _data = {
+      contractAddress: values.contractAddress.trim(),
+      network: values.network,
+    };
+    setData(_data);
+    
+    fetch(`${API_URL}/${_data.contractAddress}/${_data.network}`)
+    .then(response => response.text())
+    .then(data => {
+        setCurrentStep(Steps.VERIFIED);
+    })
+    .catch(error => {
+      alert("An error occurred. Please try again later." + error);
+    });
+  };
+
+
+
   const lastRef = useRef(null);
   useEffect(() => {
     if (lastRef.current) {
       lastRef.current.scrollIntoView({ behavior: "smooth" });
     }
   });
+// Initialize a map with key as state and value as TokenForm component
+const stateToTokenFormMap = new Map([
+  [0, <TokenForm key="form" onSubmit={handleTokenCreation} disabled={currentStep > Steps.WAITING} />],
+  [1, <TokenAirdropForm key="airdropForm" onSubmit={handleAirdrop} disabled={currentStep > Steps.WAITING} />],
+  [2, <TokenVerifyForm key="verifyForm" onSubmit={handleVerify} disabled={currentStep > Steps.WAITING} />]
+]);
 
-  return (
-    <div className="App">
-      <header className="App-header">
-        <h1>create-token-dapp</h1>
-        <Instructions key="info" />
-        {web3 ? ( state === 0?
-          <TokenForm
-            key="form"
-            onSubmit={handleTokenCreation}
-            disabled={currentStep > Steps.WAITING}
-          /> :
-          <TokenAirdropForm
-            key="airdropForm"
-            onSubmit={handleAirdrop}
-            disabled={currentStep > Steps.WAITING}
-          />
-        ) : (
+const selectedComponent = stateToTokenFormMap.get(state);
+
+return (
+  <div className="App">
+    <header className="App-header">
+      <h1>Base Token Hub</h1>
+      <Instructions key="info" />
+      {web3 ? selectedComponent : (
           <div>
           <StartButton key="begin" onClick={initializeWeb3}>
             Begin!
           </StartButton>
           <StartButton key="airdrop" onClick={initializeWeb3Airdrop}>
             Airdrop!
+          </StartButton>
+          <StartButton key="verify" onClick={initializeWeb3Verify}>
+            Verify!
           </StartButton>
           </div>
         )
@@ -207,14 +254,12 @@ const App = () => {
                 transactionHash={transactionHash}
                 etherscanGetter={etherscanGetter}
                 contractAddress={contract && contract.options.address}
-                ownerAddress={data && data.ownerAddress}
               />
               <div ref={lastRef} />
             </React.Fragment>
           )}
         </PoseGroup>
       </header>
-
       <hr />
     </div>
   );

@@ -17,7 +17,7 @@ const StyledDiv = styled.div`
 
 const Instructions = () => (
   <StyledDiv>
-    <ul>
+    {/* <ul>
       <li>Fill the information bellow</li>
       <li>Press "Create Token!" and pay for the gas</li>
       <li>Wait for the contract to be created on the blockchain</li>
@@ -27,7 +27,7 @@ const Instructions = () => (
           🦄
         </span>
       </li>
-    </ul>
+    </ul> */}
   </StyledDiv>
 );
 

@@ -15,7 +15,6 @@
 
 /src/contracts/secrets.json
 /src/contracts/node_modules
-/src/contracts/artifacts
 /src/contracts/cache
 
 # misc

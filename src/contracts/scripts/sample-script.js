@@ -14,12 +14,12 @@ async function main() {
   // await hre.run('compile');
 
   // We get the contract to deploy
-  const Greeter = await hre.ethers.getContractFactory("Greeter");
-  const greeter = await Greeter.deploy("Hello, Hardhat!");
+  const Token = await hre.ethers.getContractFactory("BaseToken_U_A");
+  const token = await Token.deploy("NameTest", "NT", 18, 1e12);
 
-  await greeter.deployed();
+  await token.deployed();
 
-  console.log("Greeter deployed to:", greeter.address);
+  console.log("Token deployed to:", token.address);
 }
 
 // We recommend this pattern to be able to use async/await everywhere
@@ -30,3 +30,4 @@ main()
     console.error(error);
     process.exit(1);
   });
+

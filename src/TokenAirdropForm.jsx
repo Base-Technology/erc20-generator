@@ -29,6 +29,7 @@ const CreateTokenButton = styled.button`
   font-weight: bold;
   font-size: 1rem;
   margin: 1rem;
+  float: right; /* added */
 `;
 
 const TokenField = ({

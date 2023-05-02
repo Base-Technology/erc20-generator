@@ -9,7 +9,8 @@ export const Steps = {
   DEPLOYING: 1,
   BROADCASTING: 2,
   DEPLOYED: 3,
-  AIRDROPED: 4
+  AIRDROPED: 4,
+  VERIFIED: 5
 };
 
 const StyledDiv = styled.div`

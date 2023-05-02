@@ -1,4 +1,4 @@
-const { mnemonic, privateKey, infuraProjectId, etherscanApiKey } = require('./secrets.json');
+const { mnemonic, privateKey, infuraProjectId, etherscanApiKey, bscscanApiKey } = require('./secrets.json');
 
 require("@nomiclabs/hardhat-waffle");
 require('@nomiclabs/hardhat-ethers');
@@ -26,9 +26,11 @@ module.exports = {
   etherscan: {
     // Your API key for Etherscan
     // Obtain one at https://etherscan.io/
-    apiKey: etherscanApiKey
+    apiKey: {
+      bscTestnet: bscscanApiKey
+    }
   },
-  defaultNetwork: "bsctestnet", // <-- change here for other network, default use hardhat network.
+  defaultNetwork: "bscTestnet", // <-- change here for other network, default use hardhat network.
   networks: {
   	localhost: {
       url: "http://127.0.0.1:8545"
@@ -66,8 +68,8 @@ module.exports = {
       gasPrice: 1000000000,
       accounts: [privateKey]
     },
-    bsctestnet: {
-      url: "https://data-seed-prebsc-2-s3.binance.org:8545/",
+    bscTestnet: {
+      url: "https://bsc-testnet.public.blastapi.io",
       chainId: 97,
       accounts: [privateKey]
     },
@@ -91,7 +93,7 @@ module.exports = {
     }
   },
   solidity: {
-  version: "0.5.0",
+  version: "0.8.0",
   settings: {
     optimizer: {
       enabled: true,

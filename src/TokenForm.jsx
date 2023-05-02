@@ -2,13 +2,10 @@ import React from "react";
 import { Formik, Form, Field } from "formik";
 import styled from "styled-components";
 import Web3 from "web3";
-import QrReader from "react-qr-reader";
 import { useToggle } from "./hooks";
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faQrcode } from "@fortawesome/free-solid-svg-icons";
 import { faWindowClose } from "@fortawesome/free-solid-svg-icons";
-import CsvReader from "./CsvReader";
 
 library.add(faQrcode);
 library.add(faWindowClose);
@@ -19,6 +16,7 @@ const StyledDiv = styled.div`
   text-align: left;
   margin: 1rem;
   padding: 1rem;
+  width: 600px;
 `;
 
 const CreateTokenButton = styled.button`
@@ -26,6 +24,7 @@ const CreateTokenButton = styled.button`
   font-weight: bold;
   font-size: 1rem;
   margin: 1rem;
+  float: right; /* added */
 `;
 
 const TokenField = ({
@@ -89,10 +88,6 @@ const TokenForm = ({ onSubmit, disabled, initialOwner }) => {
     setSubmitting(false);
   };
 
-  const handleSubmitAirdrop = (values, { setSubmitting }) => {
-    onSubmit(values);
-    setSubmitting(false);
-  };
 
   const handleValidation = values => {
     let errors = {};
@@ -123,12 +118,6 @@ const TokenForm = ({ onSubmit, disabled, initialOwner }) => {
       }
     }
 
-    if (!values.initialOwner) {
-      errors.initialOwner = "Initial owner is required";
-    } else if (!Web3.utils.isAddress(values.initialOwner)) {
-      errors.initialOwner = "Enter a valid ETH address";
-    }
-
     return errors;
   };
   
@@ -139,7 +128,8 @@ const TokenForm = ({ onSubmit, disabled, initialOwner }) => {
           tokenName: "",
           tokenSymbol: "",
           initialAmount: 0,
-          initialOwner
+          initialOwner,
+          mintingAndBurningSupport: true // added
         }}
         validate={handleValidation}
         onSubmit={handleSubmitFormik}
@@ -163,7 +153,7 @@ const TokenForm = ({ onSubmit, disabled, initialOwner }) => {
               fieldName="tokenSymbol"
               label="Token symbol"
               placeholder="Enter token symbol"
-              helpText="E.g. TEST"
+              helpText="E.g. TSC"
               maxLength={10}
               disabled={disabled}
             />
@@ -172,80 +162,19 @@ const TokenForm = ({ onSubmit, disabled, initialOwner }) => {
               errors={errors}
               touched={touched}
               fieldName="initialAmount"
-              label="Initial supply"
-              placeholder="Enter the initial supply"
-              helpText="E.g. 10"
+              label="Initial amount"
+              placeholder="Enter initial amount"
+              helpText="E.g. 1000"
               maxLength={13}
               disabled={disabled}
             />
-            <TokenField
-              values={values}
-              errors={errors}
-              touched={touched}
-              fieldName="initialOwner"
-              label="Initial owner"
-              placeholder="Enter the owner address"
-              helpText="A valid ethereum address starting with 0x..."
-              maxLength={42}
-              disabled={disabled}
-              optionalButton={
-                <button
-                  type="button"
-                  className="input-group-prepend"
-                  onClick={toggleScanning}
-                  title={
-                    isScanning
-                      ? "Click to close camera"
-                      : "Click to open the camera and scan a QR code"
-                  }
-                  disabled={disabled}
-                >
-                  <FontAwesomeIcon
-                    icon={isScanning ? "window-close" : "qrcode"}
-                  />
-                </button>
-              }
-              optionalExtraControl={
-                isScanning && (
-                  <QrReader onScan={onScan(setFieldValue)} onError={onError} />
-                )
-              }
-            />
-
-            <CreateTokenButton key="create" type="submit" disabled={disabled}>
-              Create Token!{" "}
-              {/* <span role="img" aria-label="to the moon"> */}
-              🚀🌙
-              {/* </span> */}
-            </CreateTokenButton>
+            <CreateTokenButton key="verify" type="submit" disabled={disabled}>
+                Create Token!
+                🚀🌙
+              </CreateTokenButton>
           </Form>
         )}
       />
-      {/* <div style={{ width: 500, fontSize: 20 }}>
-        <Formik>
-          validate={handleValidationAirdrop}
-          onSubmit={handleSubmitAirdrop}
-          render={({ values, errors, touched, setFieldValue }) => (
-            <Form className="needs-validation" noValidate>
-              <TokenField
-                values={values}
-                errors={errors}
-                touched={touched}
-                fieldName="contractAddress"
-                label="Contract Address"
-                placeholder="Enter the contract address"
-                helpText="A valid ethereum address starting with 0x..."
-                disabled={disabled}
-              />
-              <CreateTokenButton key="airdrop" type="submit" disabled={disabled}>
-                Airdrop Token!{" "}
-                🚀🌙
-              </CreateTokenButton>
-            </Form>
-          )}
-          <CsvReader />
-        </Formik>
-      </div> */}
     </StyledDiv>
   );
 };
