@@ -23,7 +23,7 @@ app.use(function(req, res, next) {
   next();
 });
 
-app.get('/api/verify/:contractAddress/:network', async (req, res) => {
+app.get('/:contractAddress/:network', async (req, res) => {
 const contractAddress = req.params.contractAddress;
 const network = req.params.network;
   // Verify contract function
