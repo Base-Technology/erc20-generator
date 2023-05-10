@@ -1,4 +1,4 @@
-const { mnemonic, privateKey, infuraProjectId, etherscanApiKey, bscscanApiKey } = require('./secrets.json');
+const { mnemonic, privateKey, infuraProjectId, etherscanApiKey, bscscanApiKey, arbiscanApiKey, polygonscanApiKey, opscanApiKey } = require('./secrets.json');
 
 require("@nomiclabs/hardhat-waffle");
 require('@nomiclabs/hardhat-ethers');
@@ -27,7 +27,12 @@ module.exports = {
     // Your API key for Etherscan
     // Obtain one at https://etherscan.io/
     apiKey: {
-      bscTestnet: bscscanApiKey
+      bscTestnet: bscscanApiKey,
+      bsc: bscscanApiKey,
+      arb: arbiscanApiKey,
+      eth: etherscanApiKey,
+      polygon: polygonscanApiKey,
+      op: opscanApiKey
     }
   },
   defaultNetwork: "bscTestnet", // <-- change here for other network, default use hardhat network.
@@ -36,6 +41,21 @@ module.exports = {
       url: "http://127.0.0.1:8545"
     },
     hardhat: {
+    },
+    polygon: {
+      url: "https://polygon.llamarpc.com",
+      chainId: 137,
+      accounts: [privateKey]
+    },
+    op: {
+      url: "https://mainnet.optimism.io",
+      chainId: 10,
+      accounts: [privateKey]
+    },
+    eth: {
+      url: "https://eth.llamarpc.com",
+      chainId: 1,
+      accounts: [privateKey]
     },
     ropsten: {
       url: "https://ropsten.infura.io/v3/" + infuraProjectId,
@@ -60,6 +80,11 @@ module.exports = {
       url: "https://kovan.infura.io/v3/" + infuraProjectId,
       chainId: 42,
       gasPrice: 20000000000,
+      accounts: [privateKey]
+    },
+    arb: {
+      url: "https://arb1.arbitrum.io/rpc",
+      chainId: 42161,
       accounts: [privateKey]
     },
     bsc: {

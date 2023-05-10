@@ -25,7 +25,12 @@ const CreateTokenButton = styled.button`
 `;
 
 const networkOptions = [
+  { value: "eth", label: "Ethereum Mainnet" },
+  { value: "arb", label: "Arbitrum One" },
+  { value: "bsc", label: "BSC Mainnet" },
   { value: "bscTestnet", label: "BSC Testnet" },
+  { value: "polygon", label: "Polygon Mainnet" },
+  { value: "op", label: "Optimism" },
 ];
 
 const TokenField = ({
