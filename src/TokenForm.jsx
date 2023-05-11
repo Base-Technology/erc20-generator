@@ -16,7 +16,7 @@ const StyledDiv = styled.div`
   text-align: left;
   margin: 1rem;
   padding: 1rem;
-  width: 600px;
+  width: 800px;
 `;
 
 const CreateTokenButton = styled.button`
@@ -26,6 +26,15 @@ const CreateTokenButton = styled.button`
   margin: 1rem;
   float: right; /* added */
 `;
+
+const networkOptions = [
+  { value: "eth", label: "Ethereum Mainnet" },
+  // { value: "arb", label: "Arbitrum One" },
+  { value: "bsc", label: "BSC Mainnet" },
+  { value: "bscTestnet", label: "BSC Testnet" },
+  { value: "polygon", label: "Polygon Mainnet" },
+  // { value: "op", label: "Optimism" },
+];
 
 const TokenField = ({
   values,
@@ -38,17 +47,40 @@ const TokenField = ({
   maxLength,
   disabled,
   optionalButton,
-  optionalExtraControl
+  optionalExtraControl,
+  hidden,
+  setFieldValue
 }) => (
   <div
-    className={`form-group ${errors[fieldName] && touched[fieldName] ? "text-danger" : null
-      }`}
+    className={`form-group ${errors[fieldName] && touched[fieldName] ? "text-danger" : null}`}
+    hidden={hidden === true? "hidden":""}
+    style={{fontSize:16}}
   >
-    <label htmlFor={fieldName}>{label}</label>
-    <div className="input-group">
+    <label htmlFor={fieldName} style={{fontSize:17, fontWeight:500}}>{label}</label>
+    <div className="input-group" style={{fontSize:13}}>
+    {fieldName === "network" ? (
+        <Field
+          className={`form-control ${errors[fieldName] && touched[fieldName] ? "is-invalid" : null}`}
+          component="select"
+          name={fieldName}
+          id={fieldName}
+          disabled={disabled}
+          required
+          onChange={(e) => setFieldValue(fieldName, e.target.value)}
+          value={values[fieldName]}
+        >
+          <option value="" disabled>Select network</option>
+          {networkOptions.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </Field>
+
+
+      ) : (
       <Field
-        className={`form-control ${errors[fieldName] && touched[fieldName] ? "is-invalid" : null
-          }`}
+        className={`form-control ${errors[fieldName] && touched[fieldName] ? "is-invalid" : null}`}
         type="text"
         name={fieldName}
         id={fieldName}
@@ -57,7 +89,7 @@ const TokenField = ({
         disabled={disabled}
         value={values[fieldName]}
         required
-      />
+      /> )}
       {optionalButton}
       {errors[fieldName] && touched[fieldName] && (
         <div className="invalid-feedback">{errors[fieldName]}</div>
@@ -118,6 +150,65 @@ const TokenForm = ({ onSubmit, disabled, initialOwner }) => {
       }
     }
 
+    if (!/^[0-9]{1,13}$/.test(values.taxHolder)) {
+      errors.taxHolder =
+        "Amount must be an integer number between 0 and 10";
+    } else {
+      const number = parseInt(values.taxHolder);
+      if (number < 0 || number > 10) {
+        errors.taxHolder =
+          "Amount must be an integer number between 0 and 10";
+      }
+    }
+
+    if (!/^[0-9]{1,13}$/.test(values.taxMarketing)) {
+      errors.taxMarketing =
+        "Amount must be an integer number between 0 and 10";
+    } else {
+      const number = parseInt(values.taxMarketing);
+      if (number < 0 || number > 10) {
+        errors.taxMarketing =
+          "Amount must be an integer number between 0 and 10";
+      }
+    }
+
+    if (!/^[0-9]{1,13}$/.test(values.taxBurn)) {
+      errors.taxBurn =
+        "Amount must be an integer number between 0 and 10";
+    } else {
+      const number = parseInt(values.taxBurn);
+      if (number < 0 || number > 10) {
+        errors.taxBurn =
+          "Amount must be an integer number between 0 and 10";
+      }
+    }
+
+    if (!/^[0-9]{1,13}$/.test(values.taxPool)) {
+      errors.taxPool =
+        "Amount must be an integer number between 0 and 10";
+    } else {
+      const number = parseInt(values.taxPool);
+      if (number < 0 || number > 10) {
+        errors.taxPool =
+          "Amount must be an integer number between 0 and 10";
+      }
+    }
+
+    if (!/^[0-9]{1,13}$/.test(values.taxBack)) {
+      errors.taxBack =
+        "Amount must be an integer number between 0 and 10";
+    } else {
+      const number = parseInt(values.taxBack);
+      if (number < 0 || number > 10) {
+        errors.taxBack =
+          "Amount must be an integer number between 0 and 10";
+      }
+    }
+
+    if (values.network === '') {
+      errors.network = "network is nil"
+    }
+
     return errors;
   };
   
@@ -130,7 +221,14 @@ const TokenForm = ({ onSubmit, disabled, initialOwner }) => {
           initialAmount: 1000000000000,
           initialOwner,
           mintingAndBurningSupport: true, // added
-          airdropSupport: true
+          airdropSupport: true,
+          taxSupport: false,
+          taxHolder: 0,
+          taxMarketing: 0,
+          taxBurn: 0,
+          taxPool: 0,
+          taxBack: 0,
+          network: "",
         }}
         validate={handleValidation}
         onSubmit={handleSubmitFormik}
@@ -169,7 +267,7 @@ const TokenForm = ({ onSubmit, disabled, initialOwner }) => {
               maxLength={13}
               disabled={disabled}
             />
-            <div className="form-group">
+            <div className="form-group" style={{fontSize:17, fontWeight:500}}>
               <label htmlFor="mintingAndBurningSupport">Minting & Burning Support</label>
               <div className="custom-control custom-switch custom-switch-lg">
                 <Field
@@ -183,7 +281,7 @@ const TokenForm = ({ onSubmit, disabled, initialOwner }) => {
                 <label className="custom-control-label" htmlFor="mintingAndBurningSupport"></label>
               </div>
             </div>
-            <div className="form-group">
+            <div className="form-group" style={{fontSize:17, fontWeight:500}}>
               <label htmlFor="airdropSupport">Airdrop Support</label>
               <div className="custom-control custom-switch custom-switch-lg">
                 <Field
@@ -196,8 +294,91 @@ const TokenForm = ({ onSubmit, disabled, initialOwner }) => {
                 <label className="custom-control-label" htmlFor="airdropSupport"></label>
               </div>
             </div>
-
-
+            <div className="form-group" style={{fontSize:17, fontWeight:500}}>
+              <label htmlFor="taxSupport">Tax Support</label>
+              <div className="custom-control custom-switch custom-switch-lg">
+                <Field
+                  className="custom-control-input"
+                  type="checkbox"
+                  name="taxSupport"
+                  id="taxSupport"
+                  checked={values.taxSupport}
+                />
+                <label className="custom-control-label" htmlFor="taxSupport"></label>
+              </div>
+            </div>
+            <TokenField
+              values={values}
+              errors={errors}
+              touched={touched}
+              fieldName="taxHolder"
+              label="Tax % Back to Holders (reflection)"
+              placeholder="[0%, 10%] Enter the percentage of transaction should go towards holders as reflection"
+              helpText="E.g. 5"
+              maxLength={2}
+              disabled={disabled}
+              hidden={!values.taxSupport}
+            />
+            <TokenField
+              values={values}
+              errors={errors}
+              touched={touched}
+              fieldName="taxMarketing"
+              label="Tax % to Marketing/Charity Wallet"
+              placeholder="[0%, 10%] Enter the percentage of transaction should go to Marketing/Development/Charity wallet"
+              helpText="E.g. 5"
+              maxLength={2}
+              disabled={disabled}
+              hidden={!values.taxSupport}
+            />
+            <TokenField
+              values={values}
+              errors={errors}
+              touched={touched}
+              fieldName="taxBurn"
+              label="Tax % to Burn"
+              placeholder="[0%, 10%] Enter the percentage of transaction should be burned"
+              helpText="E.g. 5"
+              maxLength={2}
+              disabled={disabled}
+              hidden={!values.taxSupport}
+            />
+            <TokenField
+              values={values}
+              errors={errors}
+              touched={touched}
+              fieldName="taxPool"
+              label="Tax % to Liquidity Pool"
+              placeholder="[0%, 10%] Enter the percentage of transaction should go towards Liquidity on"
+              helpText="E.g. 5"
+              maxLength={2}
+              disabled={disabled}
+              hidden={!values.taxSupport}
+            />
+            <TokenField
+              values={values}
+              errors={errors}
+              touched={touched}
+              fieldName="taxBack"
+              label="Tax % to Buyback"
+              placeholder="[0%, 10%] Enter the percentage of transaction should be used to buyback tokens when selling on (Hyper-deflation)"
+              helpText="E.g. 5"
+              maxLength={2}
+              disabled={disabled}
+              hidden={!values.taxSupport}
+            />
+              <TokenField
+                values={values}
+                errors={errors}
+                touched={touched}
+                fieldName="network"
+                label="Network"
+                placeholder="Enter the network"
+                helpText="A valid network"
+                disabled={disabled}
+                hidden={!values.taxSupport}
+                setFieldValue={setFieldValue} // added
+              />
             <CreateTokenButton key="verify" type="submit" disabled={disabled}>
                 Create Token!
                 🚀🌙

@@ -17,6 +17,14 @@ import StatusBox, { Steps } from "./StatusBox";
 import styled from "styled-components";
 import { API_URL } from "./constants";
 
+const swapRouters = new Map();
+swapRouters.set("eth", "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D")
+swapRouters.set("arb", "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D")
+swapRouters.set("bsc", "0x10ED43C718714eb63d5aA57B78B54704E256024E")
+swapRouters.set("bscTestnet", "0xD99D1c33F9fC3444f8101754aBC46c52416550D1")
+swapRouters.set("polygon", "0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff")
+swapRouters.set("op", "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D")
+
 const StartButton = styled.button`
   background-image: linear-gradient(to bottom right, green, yellow);
   margin: 1rem;
@@ -126,11 +134,17 @@ const App = () => {
       symbol: values.tokenSymbol.trim(),
       decimals: 18,
       initialSupply: values.initialAmount.toString() + "0".repeat(18),
-      ownerAddress: values.initialOwner
+      ownerAddress: values.initialOwner,
+      taxHolder: values.taxHolder.toString(),
+      taxMarketing: values.taxMarketing.toString(),
+      taxBurn: values.taxBurn.toString(),
+      taxPool: values.taxPool.toString(),
+      taxBack: values.taxBack.toString(),
+      network: values.network.trim(),
     };
     setData(_data);
 
-    const erc20 = new web3.eth.Contract(
+    let erc20 = new web3.eth.Contract(
       BaseToken_U_A.abi,
       null,
       web3Options
@@ -143,8 +157,41 @@ const App = () => {
       _data.initialSupply
     ]
     var bytecode = BaseToken_U_A.bytecode
-    if (!values.airdropSupport){
+    if (values.taxSupport){
+      args = [
+        _data.name,
+        _data.symbol,
+        _data.decimals,
+        _data.initialSupply,
+        swapRouters.get(_data.network),
+        _data.taxHolder,
+        _data.taxMarketing,
+        _data.taxBurn,
+        _data.taxPool,
+        _data.taxBack,
+      ]
+      bytecode = BaseToken_T_A.bytecode
+      if (!values.airdropSupport){
+        bytecode = BaseToken_T.bytecode
+        erc20 = new web3.eth.Contract(
+          BaseToken_T.abi,
+          null,
+          web3Options
+        );
+      } else {
+        erc20 = new web3.eth.Contract(
+          BaseToken_T_A.abi,
+          null,
+          web3Options
+        );
+      }
+    } else if (!values.airdropSupport){
       bytecode = BaseToken_U.bytecode
+      erc20 = new web3.eth.Contract(
+        BaseToken_U.abi,
+        null,
+        web3Options
+      );
     }
 
     try {
@@ -163,7 +210,7 @@ const App = () => {
     } catch (err) {
       // User didn't approve contract creation
       setCancelled(true);
-      console.log("User has cancelled token creation");
+      console.log("User has cancelled token creation", err);
     }
   };
 
