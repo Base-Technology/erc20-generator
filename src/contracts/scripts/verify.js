@@ -45,6 +45,8 @@ const network = req.params.network;
     // 调用getTokenName函数
     const contractName = await contract.getTokenName();
 
+    console.log("contract name: ", contractName);
+
     // // Get contract name from token
     // const TokenContract = await ethers.getContractFactory("BaseToken", {network: network});
     // const contract = await TokenContract.attach(contractAddress);
