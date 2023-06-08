@@ -150,63 +150,65 @@ const TokenForm = ({ onSubmit, disabled, initialOwner }) => {
       }
     }
 
-    if (!/^[0-9]{1,13}$/.test(values.taxHolder)) {
-      errors.taxHolder =
-        "Amount must be an integer number between 0 and 10";
-    } else {
-      const number = parseInt(values.taxHolder);
-      if (number < 0 || number > 10) {
+    if (values.taxSupport) {
+      if (!/^[0-9]{1,13}$/.test(values.taxHolder)) {
         errors.taxHolder =
           "Amount must be an integer number between 0 and 10";
+      } else {
+        const number = parseInt(values.taxHolder);
+        if (number < 0 || number > 10) {
+          errors.taxHolder =
+            "Amount must be an integer number between 0 and 10";
+        }
       }
-    }
-
-    if (!/^[0-9]{1,13}$/.test(values.taxMarketing)) {
-      errors.taxMarketing =
-        "Amount must be an integer number between 0 and 10";
-    } else {
-      const number = parseInt(values.taxMarketing);
-      if (number < 0 || number > 10) {
+  
+      if (!/^[0-9]{1,13}$/.test(values.taxMarketing)) {
         errors.taxMarketing =
           "Amount must be an integer number between 0 and 10";
+      } else {
+        const number = parseInt(values.taxMarketing);
+        if (number < 0 || number > 10) {
+          errors.taxMarketing =
+            "Amount must be an integer number between 0 and 10";
+        }
       }
-    }
-
-    if (!/^[0-9]{1,13}$/.test(values.taxBurn)) {
-      errors.taxBurn =
-        "Amount must be an integer number between 0 and 10";
-    } else {
-      const number = parseInt(values.taxBurn);
-      if (number < 0 || number > 10) {
+  
+      if (!/^[0-9]{1,13}$/.test(values.taxBurn)) {
         errors.taxBurn =
           "Amount must be an integer number between 0 and 10";
+      } else {
+        const number = parseInt(values.taxBurn);
+        if (number < 0 || number > 10) {
+          errors.taxBurn =
+            "Amount must be an integer number between 0 and 10";
+        }
       }
-    }
-
-    if (!/^[0-9]{1,13}$/.test(values.taxPool)) {
-      errors.taxPool =
-        "Amount must be an integer number between 0 and 10";
-    } else {
-      const number = parseInt(values.taxPool);
-      if (number < 0 || number > 10) {
+  
+      if (!/^[0-9]{1,13}$/.test(values.taxPool)) {
         errors.taxPool =
           "Amount must be an integer number between 0 and 10";
+      } else {
+        const number = parseInt(values.taxPool);
+        if (number < 0 || number > 10) {
+          errors.taxPool =
+            "Amount must be an integer number between 0 and 10";
+        }
       }
-    }
-
-    if (!/^[0-9]{1,13}$/.test(values.taxBack)) {
-      errors.taxBack =
-        "Amount must be an integer number between 0 and 10";
-    } else {
-      const number = parseInt(values.taxBack);
-      if (number < 0 || number > 10) {
+  
+      if (!/^[0-9]{1,13}$/.test(values.taxBack)) {
         errors.taxBack =
           "Amount must be an integer number between 0 and 10";
+      } else {
+        const number = parseInt(values.taxBack);
+        if (number < 0 || number > 10) {
+          errors.taxBack =
+            "Amount must be an integer number between 0 and 10";
+        }
       }
-    }
-
-    if (values.network === '') {
-      errors.network = "network is nil"
+  
+      if (values.network === '') {
+        errors.network = "network is nil"
+      }
     }
 
     return errors;
@@ -276,7 +278,6 @@ const TokenForm = ({ onSubmit, disabled, initialOwner }) => {
                   name="mintingAndBurningSupport"
                   id="mintingAndBurningSupport"
                   checked={values.mintingAndBurningSupport}
-                  disabled={true}
                 />
                 <label className="custom-control-label" htmlFor="mintingAndBurningSupport"></label>
               </div>

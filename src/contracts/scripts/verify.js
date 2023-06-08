@@ -2,6 +2,7 @@
 const hre = require("hardhat");
 const { run } = require("hardhat");
 const fs = require("fs");
+const ethers = hre.ethers;
 
 const express = require('express');
 const app = express();
@@ -14,7 +15,7 @@ constructorMap["BaseToken_U"] = ["NameTest", "NT", 18, 1e12];
 constructorMap["BaseToken_U_A"] = ["NameTest", "NT", 18, 1e12];
 constructorMap["BaseToken_T"] = ["NameTest", "NT", 18, 1e12, ethers.constants.AddressZero, 1, 1, 1, 1, 1];
 constructorMap["BaseToken_T_A"] = ["NameTest", "NT", 18, 1e12, ethers.constants.AddressZero, 1, 1, 1, 1, 1];
-constructorMap["BaseToken_A"] = ["NameTest", "NT", 18, 1e12, 1e12];
+constructorMap["BaseToken_A"] = ["NameTest", "NT", 18, 1e12];
 
 // Add headers to allow cross-origin requests
 app.use(function(req, res, next) {
@@ -30,10 +31,24 @@ const network = req.params.network;
   async function verifyContract() {
     const date = new Date();
     console.log(`[${date.toLocaleString()}] New Request, contract address: ${contractAddress}`, `Network: ${network}`);
-    // Get contract name from token
-    const TokenContract = await ethers.getContractFactory("BaseToken", {network: network});
-    const contract = await TokenContract.attach(contractAddress);
+    // 设置ABI
+    const abi = [
+      "function getTokenName() public view returns (string memory)"
+    ];
+
+    // 获取一个签名者（例如默认的第一个签名者）
+    const [signer] = await ethers.getSigners();
+
+    // 使用签名者和ABI创建合约实例
+    const contract = new ethers.Contract(contractAddress, abi, signer);
+
+    // 调用getTokenName函数
     const contractName = await contract.getTokenName();
+
+    // // Get contract name from token
+    // const TokenContract = await ethers.getContractFactory("BaseToken", {network: network});
+    // const contract = await TokenContract.attach(contractAddress);
+    // const contractName = await contract.getTokenName();
 
     try {
       await run("verify:verify", {

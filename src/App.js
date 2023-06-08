@@ -157,41 +157,51 @@ const App = () => {
       _data.initialSupply
     ]
     var bytecode = BaseToken_U_A.bytecode
-    if (values.taxSupport){
+    if (!values.mintingAndBurningSupport) {
       args = [
         _data.name,
         _data.symbol,
         _data.decimals,
         _data.initialSupply,
-        swapRouters.get(_data.network),
-        _data.taxHolder,
-        _data.taxMarketing,
-        _data.taxBurn,
-        _data.taxPool,
-        _data.taxBack,
       ]
-      bytecode = BaseToken_T_A.bytecode
-      if (!values.airdropSupport){
-        bytecode = BaseToken_T.bytecode
+      bytecode = BaseToken_A.bytecode
+    } else {
+      if (values.taxSupport){
+        args = [
+          _data.name,
+          _data.symbol,
+          _data.decimals,
+          _data.initialSupply,
+          swapRouters.get(_data.network),
+          _data.taxHolder,
+          _data.taxMarketing,
+          _data.taxBurn,
+          _data.taxPool,
+          _data.taxBack,
+        ]
+        bytecode = BaseToken_T_A.bytecode
+        if (!values.airdropSupport){
+          bytecode = BaseToken_T.bytecode
+          erc20 = new web3.eth.Contract(
+            BaseToken_T.abi,
+            null,
+            web3Options
+          );
+        } else {
+          erc20 = new web3.eth.Contract(
+            BaseToken_T_A.abi,
+            null,
+            web3Options
+          );
+        }
+      } else if (!values.airdropSupport){
+        bytecode = BaseToken_U.bytecode
         erc20 = new web3.eth.Contract(
-          BaseToken_T.abi,
-          null,
-          web3Options
-        );
-      } else {
-        erc20 = new web3.eth.Contract(
-          BaseToken_T_A.abi,
+          BaseToken_U.abi,
           null,
           web3Options
         );
       }
-    } else if (!values.airdropSupport){
-      bytecode = BaseToken_U.bytecode
-      erc20 = new web3.eth.Contract(
-        BaseToken_U.abi,
-        null,
-        web3Options
-      );
     }
 
     try {
