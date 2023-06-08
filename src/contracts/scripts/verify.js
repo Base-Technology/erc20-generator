@@ -58,11 +58,14 @@ const network = req.params.network;
         constructorArguments: constructorMap[contractName],
         network: network
       });
+      console.log('Contract verified successfully!');
       res.send('Contract verified successfully!');
     } catch (e) {
       if (e.message.toLowerCase().includes("already verified")) {
-        res.send('Contract already verified!');
+        console.log('Contract verified successfully!');
+        res.send('Contract verified successfully!');
       } else {
+        console.log('Error verifying contract!', e);
         res.send(`Error verifying contract! ${e}`);
       }
     }
