@@ -222,7 +222,7 @@ const TokenForm = ({ onSubmit, disabled, initialOwner }) => {
           tokenSymbol: "",
           initialAmount: 1000000000000,
           initialOwner,
-          mintingAndBurningSupport: true, // added
+          mintingAndBurningSupport: false, // added
           airdropSupport: true,
           taxSupport: false,
           taxHolder: 0,
