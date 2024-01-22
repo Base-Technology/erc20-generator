@@ -1,6 +1,5 @@
-npm run build
 rm -rf dist
-mv build dist
+npm run build
 git add .
 git commit -m "$1"
 git push
