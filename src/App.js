@@ -13,6 +13,7 @@ import Instructions from "./Instructions";
 import TokenForm from "./TokenForm";
 import TokenVerifyForm from "./TokenVerifyForm";
 import TokenAirdropForm from "./TokenAirdropForm";
+import BoomForm from "./BoomForm";
 import StatusBox, { Steps } from "./StatusBox";
 import styled from "styled-components";
 import { API_URL } from "./constants";
@@ -118,6 +119,25 @@ const App = () => {
 
     const _web3 = new Web3(Web3.givenProvider, null, web3Options);
     const _state = 2;
+    const accounts = await _web3.eth.getAccounts();
+    setDefaultAccount(accounts[0]);
+    const networkId = await _web3.eth.net.getId();
+    setEtherscanGetter(getEtherscanURL(networkId));
+    setWeb3(_web3);
+    setState(_state);
+  };
+
+  const initializeWeb3Boom = async () => {
+    try {
+      // Ensure accounts are unlocked
+      await Web3.givenProvider.enable();
+    } catch (err) {
+      // User didn't approve access for accounts
+      console.log("User has cancelled account access permission");
+    }
+
+    const _web3 = new Web3(Web3.givenProvider, null, web3Options);
+    const _state = 3;
     const accounts = await _web3.eth.getAccounts();
     setDefaultAccount(accounts[0]);
     const networkId = await _web3.eth.net.getId();
@@ -271,6 +291,25 @@ const handleVerify = async values => {
     });
   };
 
+  const handleBoom = async values => {
+    setCurrentStep(Steps.DEPLOYING);
+
+    const _data = {
+      contractAddress: values.contractAddress.trim(),
+      network: values.network,
+    };
+    setData(_data);
+    
+    fetch(`${API_URL}/${_data.contractAddress}/${_data.network}`)
+    .then(response => response.text())
+    .then(data => {
+        setCurrentStep(Steps.VERIFIED);
+    })
+    .catch(error => {
+      alert("An error occurred. Please try again later." + error);
+    });
+  };
+
 
 
   const lastRef = useRef(null);
@@ -283,7 +322,8 @@ const handleVerify = async values => {
 const stateToTokenFormMap = new Map([
   [0, <TokenForm key="form" onSubmit={handleTokenCreation} disabled={currentStep > Steps.WAITING} />],
   [1, <TokenAirdropForm key="airdropForm" onSubmit={handleAirdrop} disabled={currentStep > Steps.WAITING} />],
-  [2, <TokenVerifyForm key="verifyForm" onSubmit={handleVerify} disabled={currentStep > Steps.WAITING} />]
+  [2, <TokenVerifyForm key="verifyForm" onSubmit={handleVerify} disabled={currentStep > Steps.WAITING} />],
+  [3, <BoomForm key="boomForm" onSubmit={handleBoom} disabled={currentStep > Steps.WAITING} />]
 ]);
 
 const selectedComponent = stateToTokenFormMap.get(state);
@@ -303,6 +343,9 @@ return (
           </StartButton>
           <StartButton key="verify" onClick={initializeWeb3Verify}>
             Verify!
+          </StartButton>
+          <StartButton key="boom" onClick={initializeWeb3Boom}>
+            Boom!
           </StartButton>
           </div>
         )
